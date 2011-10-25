@@ -14,6 +14,7 @@
  */
 
 elgg_load_library('elgg:sched_conf');
+elgg_load_library('elgg:event_calendar');
 
 $event = $vars['entity'];
 

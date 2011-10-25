@@ -63,7 +63,7 @@ $start_time_input = elgg_view("input/timepicker",array(
 ));
 
 $start_date_label = elgg_echo("event_calendar:start_date_label");
-$start_date_input = elgg_view("input/date",array(
+$start_date_input = elgg_view("event_calendar/input/date_local",array(
 	'timestamp'=>TRUE, 
 	'autocomplete'=>'off',
 	'name' => 'start_date',
@@ -74,7 +74,10 @@ $application_label = elgg_echo('sched_conf:application_label');
 $application_input = elgg_view('input/dropdown', array(
 	'name' => 'application',
 	'id' => 'sched-conf-application',
-	'options' => array(elgg_echo('sched_conf:open_meetings'),elgg_echo('sched_conf:big_blue_button'),elgg_echo('sched_conf:unity')),
+	'options_values' => array(
+		'open_meetings'=>elgg_echo('sched_conf:open_meetings'),
+		'bbb'=>elgg_echo('sched_conf:big_blue_button'),
+		'unity' => elgg_echo('sched_conf:unity')),
 	'value' => $fd['application']
 ));
 

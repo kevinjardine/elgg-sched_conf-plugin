@@ -151,7 +151,7 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 
 	$user_guid = elgg_get_logged_in_user_guid();
 	
-	$required_fields = array('title','application','application_code');
+	$required_fields = array('title','application');
 	
 	if ($conf_guid) {
 		$conf = get_entity($conf_guid);
@@ -230,6 +230,9 @@ function sched_conf_sync_event_for_conference($conf,$event=NULL) {
 		$event->subtype = 'event_calendar';
 		$event->owner_guid = $conf->owner_guid;
 		$event->container_guid = $conf->container_guid;
+		$new_event = TRUE;
+	} else {
+		$new_event = FALSE;
 	}
 	
 	$event->access_id = $conf->access_id;
@@ -245,5 +248,64 @@ function sched_conf_sync_event_for_conference($conf,$event=NULL) {
 		$event->real_end_time = event_calendar_get_end_time($event);
 	}	
 	$event->save();
+	// TODO - need to do something with BBB if an existing event is changed as well
+	if ($new_event && $conf->application == 'bbb') {
+		sched_conf_create_bbb_conf($conf);
+	}
 	return $event;
 }
+
+function sched_conf_create_bbb_conf($conf) {
+	$bbb_security_salt = elgg_get_plugin_setting('bbb_security_salt','sched_conf');
+	$bbb_server_url = elgg_get_plugin_setting('bbb_server_url','sched_conf');
+	$day_in_minutes = 60*24;
+	$duration = (int)($conf->start_date/60)+$day_in_minutes;
+	$title = urlencode($conf->title);
+	$params = "name=$title&meetingID={$conf->guid}&duration=$duration";
+	$checksum = sha1('create'.$params.$bbb_security_salt);
+	$params .= "&checksum=$checksum";
+	
+	// create curl resource
+    $ch = curl_init();
+
+    // set url
+    curl_setopt($ch, CURLOPT_URL, $bbb_server_url.'bigbluebutton/api/create?'.$params);
+
+    //return the transfer as a string
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+    // $output contains the output string
+    $output = curl_exec($ch);
+
+    // close curl resource to free up system resources
+    curl_close($ch);
+	
+    error_log("BBB create response:");
+    error_log($output);    
+    
+	$xml = new SimpleXMLElement($output);
+	if ($xml->returncode == 'SUCCESS') {
+		$conf->attendee_password = (string) $xml->attendeePW;
+		$conf->moderator_password = (string) $xml->moderatorPW;
+	} else {
+		register_error('sched_conf_bbb_create_error',array($xml->message));
+	}
+}
+
+function sched_conf_get_join_bbb_url($conf) {
+	$bbb_security_salt = elgg_get_plugin_setting('bbb_security_salt','sched_conf');
+	$bbb_server_url = elgg_get_plugin_setting('bbb_server_url','sched_conf');
+	$user = elgg_get_logged_in_user_entity();
+	$full_name = urlencode($user->name);
+	if ($conf->canEdit()) {
+		$password = urlencode($conf->moderator_password);
+	} else {
+		$password = urlencode($conf->attendee_password);
+	}
+	$params = "fullName=$full_name&meetingID={$conf->guid}&userID={$user->guid}&password=$password";
+	$checksum = sha1('join'.$params.$bbb_security_salt);
+	$params .= "&checksum=$checksum";
+	$url = $bbb_server_url.'bigbluebutton/api/join?'.$params;
+	return $url;
+}
+	

@@ -1,4 +1,6 @@
 <?php
+elgg_load_library('elgg:sched_conf');
+
 $conf_guid = get_input('guid',0);
 $conf = get_entity($conf_guid);
 if (elgg_instanceof($conf,'object','conference') && $conf->canEdit()) {
@@ -16,7 +18,7 @@ if (elgg_instanceof($conf,'object','conference') && $conf->canEdit()) {
 		if (elgg_instanceof($container,'group')) {
 			forward('event_calendar/group/'.$container->guid);
 		} else {
-			forward('event_calendar/list/all');
+			forward('event_calendar/list');
 		}
 	}
 } else {
