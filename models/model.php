@@ -306,7 +306,7 @@ function sched_conf_get_join_bbb_url($conf) {
 	} else {
 		$password = urlencode($conf->attendee_password);
 	}
-	$params = "fullName=$full_name&meetingID={$conf->guid}&userID={$user->guid}&password=$password";
+	$params = "fullName=$full_name&meetingID={$conf->guid}&userID={$user->username}&password=$password";
 	$checksum = sha1('join'.$params.$bbb_security_salt);
 	$params .= "&checksum=$checksum";
 	$url = $bbb_server_url.'bigbluebutton/api/join?'.$params;
