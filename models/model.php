@@ -141,7 +141,6 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 		'title',
 		'description',
 		'application',
-		'application_code',
 		'immediate',
 		'start_date',
 		'tags',
@@ -174,14 +173,12 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 	
 	foreach($fields as $fn) {
 		$value = trim(get_input($fn,''));
-		if (!$value && in_array($fn,$required_fields)) {
+		if (($value === '') && in_array($fn,$required_fields)) {
 			$missing_fields = TRUE;
 			break;
 		}
 		$conf->$fn = $value;
 	}
-	
-	error_log("start date is {$conf->start_date}");
 	
 	if (!$missing_fields) {
 		$sh = get_input('start_time_h','');
@@ -199,13 +196,20 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 			// This allows sorting by date *and* time.
 			$conf->start_date += $conf->start_time*60;
 		}
-		if (!$conf->immediate && (!$conf->start_date || !$conf->start_time)) {
+		if (($conf->immediate === '') && (!$conf->start_date || !$conf->start_time)) {
 			$missing_fields = TRUE;
 		}
 	}
 	
-	// TODO: need to handle the immediate case
-	// Probably just set start date and start time to now
+	// handle the immediate case
+	// set start date and start time to now
+	if ($conf->immediate !== '') {
+		$conf->start_date = time();
+		$today = date('Y-m-d',$conf->start_date);
+		$midnight = strtotime($today);
+		$conf->start_time = ((int)(($conf->start_date - $midnight)/(60*5)))*5;
+	}
+	
 	if (!$missing_fields && $conf->save()) {
 		if ($conf_guid) {
 			$event = sched_conf_get_event_for_conference($conf_guid);

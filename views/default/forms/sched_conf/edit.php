@@ -81,12 +81,12 @@ $application_input = elgg_view('input/dropdown', array(
 	'value' => $fd['application']
 ));
 
-$application_code_label = elgg_echo('sched_conf:application_code_label');
+/*$application_code_label = elgg_echo('sched_conf:application_code_label');
 $application_code_input = elgg_view('input/text', array(
 	'name' => 'application_code',
 	'id' => 'sched-conf-application-code',
 	'value' => $fd['application_code']
-));
+));*/
 
 $tags_label = elgg_echo('tags');
 $tags_input = elgg_view('input/tags', array(
