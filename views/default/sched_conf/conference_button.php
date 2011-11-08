@@ -26,6 +26,7 @@ if ($conf && $conf->application == 'bbb') {
 			'href' => sched_conf_get_join_bbb_url($conf),
 			'text' => elgg_echo('sched_conf:join_conf_button'),
 			'class' => 'elgg-button elgg-button-action',
+			'target' => '_blank',
 		));
 	
 		echo '<div class="sched-conf-join-button">'.$button.'</div>';

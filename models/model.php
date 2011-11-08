@@ -254,16 +254,16 @@ function sched_conf_sync_event_for_conference($conf,$event=NULL) {
 	$event->save();
 	// TODO - need to do something with BBB if an existing event is changed as well
 	if ($new_event && $conf->application == 'bbb') {
-		sched_conf_create_bbb_conf($conf);
+		sched_conf_create_bbb_conf($conf,$event);
 	}
 	return $event;
 }
 
-function sched_conf_create_bbb_conf($conf) {
+function sched_conf_create_bbb_conf($conf,$event) {
 	$bbb_security_salt = elgg_get_plugin_setting('bbb_security_salt','sched_conf');
 	$bbb_server_url = elgg_get_plugin_setting('bbb_server_url','sched_conf');
 	$day_in_minutes = 60*24;
-	$duration = (int)($conf->start_date/60)+$day_in_minutes;
+	$duration = (int)(($event->real_end_time-$event->start_date)/60)+$day_in_minutes;
 	$title = urlencode($conf->title);
 	$params = "name=$title&meetingID={$conf->guid}&duration=$duration";
 	$checksum = sha1('create'.$params.$bbb_security_salt);
@@ -283,6 +283,9 @@ function sched_conf_create_bbb_conf($conf) {
 
     // close curl resource to free up system resources
     curl_close($ch);
+    
+    error_log("BBB create request:");
+    error_log($bbb_server_url.'bigbluebutton/api/create?'.$params); 
 	
     error_log("BBB create response:");
     error_log($output);    
