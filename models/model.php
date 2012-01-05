@@ -261,7 +261,7 @@ function sched_conf_sync_event_for_conference($conf,$event=NULL) {
 
 function sched_conf_create_bbb_conf($conf,$event) {
 	$bbb_security_salt = elgg_get_plugin_setting('bbb_security_salt','sched_conf');
-	$bbb_server_url = elgg_get_plugin_setting('bbb_server_url','sched_conf');
+	$bbb_server_url = rtrim(elgg_get_plugin_setting('bbb_server_url','sched_conf'), '/') . '/';
 	$day_in_minutes = 60*24;
 	$duration = (int)(($event->real_end_time-$event->start_date)/60)+$day_in_minutes;
 	$title = urlencode($conf->title);
@@ -273,7 +273,7 @@ function sched_conf_create_bbb_conf($conf,$event) {
     $ch = curl_init();
 
     // set url
-    curl_setopt($ch, CURLOPT_URL, $bbb_server_url.'bigbluebutton/api/create?'.$params);
+    curl_setopt($ch, CURLOPT_URL, $bbb_server_url.'api/create?'.$params);
 
     //return the transfer as a string
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -285,7 +285,7 @@ function sched_conf_create_bbb_conf($conf,$event) {
     curl_close($ch);
     
     error_log("BBB create request:");
-    error_log($bbb_server_url.'bigbluebutton/api/create?'.$params); 
+    error_log($bbb_server_url.'api/create?'.$params);
 	
     error_log("BBB create response:");
     error_log($output);    
@@ -301,7 +301,7 @@ function sched_conf_create_bbb_conf($conf,$event) {
 
 function sched_conf_get_join_bbb_url($conf) {
 	$bbb_security_salt = elgg_get_plugin_setting('bbb_security_salt','sched_conf');
-	$bbb_server_url = elgg_get_plugin_setting('bbb_server_url','sched_conf');
+	$bbb_server_url = rtrim(elgg_get_plugin_setting('bbb_server_url','sched_conf'), '/') . '/';
 	$user = elgg_get_logged_in_user_entity();
 	$full_name = urlencode($user->name);
 	if ($conf->canEdit()) {
@@ -312,7 +312,7 @@ function sched_conf_get_join_bbb_url($conf) {
 	$params = "fullName=$full_name&meetingID={$conf->guid}&userID={$user->username}&password=$password";
 	$checksum = sha1('join'.$params.$bbb_security_salt);
 	$params .= "&checksum=$checksum";
-	$url = $bbb_server_url.'bigbluebutton/api/join?'.$params;
+	$url = $bbb_server_url.'api/join?'.$params;
 	return $url;
 }
 	
