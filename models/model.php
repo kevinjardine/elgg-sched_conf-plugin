@@ -1,5 +1,6 @@
 <?php
 function sched_conf_get_page_content_edit($page_type,$guid) {
+	elgg_load_library('elgg:event_calendar');
 	$vars = array();
 	$vars['id'] = 'sched-conf-edit';
 	$vars['name'] = 'sched_conf_edit';
