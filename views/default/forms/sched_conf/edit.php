@@ -70,7 +70,7 @@ $start_date_input = elgg_view("event_calendar/input/date_local",array(
 	'value'=>$fd['start_date'],
 ));
 
-$application_label = elgg_echo('sched_conf:application_label');
+/*$application_label = elgg_echo('sched_conf:application_label');
 $application_input = elgg_view('input/dropdown', array(
 	'name' => 'application',
 	'id' => 'sched-conf-application',
@@ -80,6 +80,7 @@ $application_input = elgg_view('input/dropdown', array(
 		'unity' => elgg_echo('sched_conf:unity')),
 	'value' => $fd['application']
 ));
+*/
 
 /*$application_code_label = elgg_echo('sched_conf:application_code_label');
 $application_code_input = elgg_view('input/text', array(
@@ -105,7 +106,8 @@ $access_input = elgg_view('input/access', array(
 // hidden inputs
 $group_guid_input = elgg_view('input/hidden', array('name' => 'group_guid', 'value' => $fd['group_guid']));
 $guid_input = elgg_view('input/hidden', array('name' => 'guid', 'value' => $fd['guid']));
-
+// hard coded to BBB for now
+$application_input = elgg_view('input/hidden', array('name' => 'application', 'value' => 'bbb'));
 
 echo <<<___HTML
 <div>
@@ -133,16 +135,6 @@ $description_input
 </div>
 
 <div>
-	<label for="sched-conf-application">$application_label</label>
-	$application_input
-</div>
-
-<div>
-	<label for="sched-conf-application">$application_code_label</label>
-	$application_code_input
-</div>
-
-<div>
 	<label for="sched-conf-tags">$tags_label</label>
 	$tags_input
 </div>
@@ -156,6 +148,7 @@ $description_input
 
 	$guid_input
 	$container_guid_input
+	$application_input
 
 	$action_buttons
 </div>
