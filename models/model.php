@@ -1,4 +1,8 @@
 <?php
+
+// prevent fatal errors when calling event_calendar lib functions
+elgg_load_library('elgg:event_calendar');
+
 function sched_conf_get_page_content_edit($page_type,$guid) {
 	elgg_load_library('elgg:event_calendar');
 	$vars = array();
