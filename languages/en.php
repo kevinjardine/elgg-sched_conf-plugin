@@ -27,7 +27,8 @@ $english = array(
 	'sched_conf:venue' => "Web conference with %s",
 	'sched_conf:bbb_server_url' => "Big Blue Button server URL (must end with slash)",
 	'sched_conf:bbb_security_salt' => "Big Blue Button security salt",
-	'sched_conf_bbb_create_error' => "Error: unable to create BBB conference, message was: %s",
+	'sched_conf:bbb_create_error' => "Error: unable to create BBB conference, message was: %s",
+	'sched_conf:bbb_settings_error' => "Error: must set conference URL and salt in plugin settings",
 	'sched_conf:join_conf_button' => "Join conference",
 		
 );

@@ -30,13 +30,12 @@ if ($conf) {
 		system_message(elgg_echo('sched_conf:add_conf_response'));
 	}
 	
-	if ($group_guid) {
+	if (elgg_instanceof(get_entity($conf->container_guid),'group')) {
 		forward('event_calendar/group/'.$group_guid);
 	} else {
 		forward('event_calendar/list');
 	}
 	 
-	forward($event->getURL());
 } else {
 	// redisplay form with error message
 	if ($conf_guid) {

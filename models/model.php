@@ -263,40 +263,44 @@ function sched_conf_sync_event_for_conference($conf,$event=NULL) {
 function sched_conf_create_bbb_conf($conf,$event) {
 	$bbb_security_salt = elgg_get_plugin_setting('bbb_security_salt','sched_conf');
 	$bbb_server_url = rtrim(elgg_get_plugin_setting('bbb_server_url','sched_conf'), '/') . '/';
-	$day_in_minutes = 60*24;
-	$duration = (int)(($event->real_end_time-$event->start_date)/60)+$day_in_minutes;
-	$title = urlencode($conf->title);
-	$params = "name=$title&meetingID={$conf->guid}&duration=$duration";
-	$checksum = sha1('create'.$params.$bbb_security_salt);
-	$params .= "&checksum=$checksum";
+	if ($bbb_security_salt) {
+		$day_in_minutes = 60*24;
+		$duration = (int)(($event->real_end_time-$event->start_date)/60)+$day_in_minutes;
+		$title = urlencode($conf->title);
+		$params = "name=$title&meetingID={$conf->guid}&duration=$duration";
+		$checksum = sha1('create'.$params.$bbb_security_salt);
+		$params .= "&checksum=$checksum";
+		
+		// create curl resource
+	    $ch = curl_init();
 	
-	// create curl resource
-    $ch = curl_init();
-
-    // set url
-    curl_setopt($ch, CURLOPT_URL, $bbb_server_url.'api/create?'.$params);
-
-    //return the transfer as a string
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-    // $output contains the output string
-    $output = curl_exec($ch);
-
-    // close curl resource to free up system resources
-    curl_close($ch);
-    
-    error_log("BBB create request:");
-    error_log($bbb_server_url.'api/create?'.$params);
+	    // set url
+	    curl_setopt($ch, CURLOPT_URL, $bbb_server_url.'api/create?'.$params);
 	
-    error_log("BBB create response:");
-    error_log($output);    
-    
-	$xml = new SimpleXMLElement($output);
-	if ($xml->returncode == 'SUCCESS') {
-		$conf->attendee_password = (string) $xml->attendeePW;
-		$conf->moderator_password = (string) $xml->moderatorPW;
+	    //return the transfer as a string
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	
+	    // $output contains the output string
+	    $output = curl_exec($ch);
+	
+	    // close curl resource to free up system resources
+	    curl_close($ch);
+	    
+	    /*error_log("BBB create request:");
+	    error_log($bbb_server_url.'api/create?'.$params);
+		
+	    error_log("BBB create response:");
+	    error_log($output);*/
+	    
+		$xml = new SimpleXMLElement($output);
+		if ($xml->returncode == 'SUCCESS') {
+			$conf->attendee_password = (string) $xml->attendeePW;
+			$conf->moderator_password = (string) $xml->moderatorPW;
+		} else {
+			register_error(elgg_echo('sched_conf:bbb_create_error',array($xml->message)));
+		}
 	} else {
-		register_error('sched_conf_bbb_create_error',array($xml->message));
+		register_error(elgg_echo('sched_conf:bbb_settings_error'));
 	}
 }
 

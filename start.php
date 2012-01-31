@@ -92,7 +92,10 @@ function sched_conf_page_handler($page) {
 			gatekeeper();
 			echo sched_conf_get_page_content_edit($page_type, $page[1]);
 			break;
+		default:
+			return FALSE;
 	}
+	return TRUE;
 }
 
 function sched_conf_url_handler($entity) {

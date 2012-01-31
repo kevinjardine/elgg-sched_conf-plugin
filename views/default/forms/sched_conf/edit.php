@@ -104,7 +104,7 @@ $access_input = elgg_view('input/access', array(
 ));
 
 // hidden inputs
-$group_guid_input = elgg_view('input/hidden', array('name' => 'group_guid', 'value' => $fd['group_guid']));
+$group_guid_input = elgg_view('input/hidden', array('name' => 'group_guid', 'value' => $vars['group_guid']));
 $guid_input = elgg_view('input/hidden', array('name' => 'guid', 'value' => $fd['guid']));
 // hard coded to BBB for now
 $application_input = elgg_view('input/hidden', array('name' => 'application', 'value' => 'bbb'));
@@ -147,7 +147,7 @@ $description_input
 <div class="elgg-foot">
 
 	$guid_input
-	$container_guid_input
+	$group_guid_input
 	$application_input
 
 	$action_buttons
