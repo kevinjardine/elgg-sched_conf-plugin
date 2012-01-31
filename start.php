@@ -39,22 +39,24 @@ function sched_conf_init() {
 
 function sched_conf_pagesetup() {
 	// a bit of a kludge to check if we are on a listing page
-	$url = current_page_url();
-	if ((strpos($url,'event_calendar/list') !== FALSE)) {
-		elgg_register_menu_item('title', array(
-			'name' => 'add_conference',
-			'href' => 'sched_conf/add/',
-			'text' => elgg_echo('sched_conf:add_conf_title'),
-			'class' => 'elgg-button elgg-button-action',
-		));
-	} else if (strpos($url,'event_calendar/group') !== FALSE) {
-		$group_guid = elgg_get_page_owner_guid();
-		elgg_register_menu_item('title', array(
-			'name' => 'add_conference',
-			'href' => "sched_conf/add/".$group_guid,
-			'text' => elgg_echo('sched_conf:add_conf_title'),
-			'class' => 'elgg-button elgg-button-action',
-		));
+	if (elgg_is_logged_in()) {
+		$url = current_page_url();
+		if ((strpos($url,'event_calendar/list') !== FALSE)) {
+			elgg_register_menu_item('title', array(
+				'name' => 'add_conference',
+				'href' => 'sched_conf/add/',
+				'text' => elgg_echo('sched_conf:add_conf_title'),
+				'class' => 'elgg-button elgg-button-action',
+			));
+		} else if (strpos($url,'event_calendar/group') !== FALSE) {
+			$group_guid = elgg_get_page_owner_guid();
+			elgg_register_menu_item('title', array(
+				'name' => 'add_conference',
+				'href' => "sched_conf/add/".$group_guid,
+				'text' => elgg_echo('sched_conf:add_conf_title'),
+				'class' => 'elgg-button elgg-button-action',
+			));
+		}
 	}
 }
 
