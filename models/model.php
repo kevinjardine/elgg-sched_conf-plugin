@@ -198,7 +198,6 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 	if (!$missing_fields && !$immediate) {
 		$sh = get_input('start_time_h','');
 		$sm = get_input('start_time_m','');
-		error_log("attempting to reset start time: sh, sm, start_date: $sh, $sm, {$conf->start_date}");
 		if (is_numeric($sh) && is_numeric($sm)) {
 			// workaround for pulldown zero value bug
 			$sh--;
@@ -212,7 +211,6 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 			// This allows sorting by date *and* time.
 			$conf->start_date += $conf->start_time*60;
 		}
-		error_log("after calculations: sh, sm, start_date: $sh, $sm, {$conf->start_time}, {$conf->start_date}");
 		if (!$conf->start_date || !$conf->start_time) {
 			$missing_fields = TRUE;
 		}
@@ -237,8 +235,6 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 }
 
 function sched_conf_sync_event_for_conference($conf,$event=NULL) {
-	error_log('attempting to sync this conference:');
-	error_log(print_r($conf,TRUE));
 	if (!$event) {
 		$event = new ElggObject();
 		$event->subtype = 'event_calendar';
