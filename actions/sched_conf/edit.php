@@ -22,16 +22,16 @@ $conf = sched_conf_set_event_from_form($conf_guid,$group_guid);
 if ($conf) {
 	// remove sticky form entries
 	elgg_clear_sticky_form('sched_conf');
-	$user_guid = elgg_get_logged_in_user_guid();
 	if ($conf_guid) {
 		system_message(elgg_echo('sched_conf:edit_conf_response'));
 	} else {
+		$user_guid = elgg_get_logged_in_user_guid();
 		add_to_river('river/object/sched_conf/create','create',$user_guid,$event_guid);
 		system_message(elgg_echo('sched_conf:add_conf_response'));
 	}
 	
 	if (elgg_instanceof(get_entity($conf->container_guid),'group')) {
-		forward('event_calendar/group/'.$group_guid);
+		forward('event_calendar/group/'.$conf->container_guid);
 	} else {
 		forward('event_calendar/list');
 	}

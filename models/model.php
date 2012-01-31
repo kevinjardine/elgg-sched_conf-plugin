@@ -146,10 +146,10 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 		'start_date',
 		'tags',
 		'access_id',
-		'group_guid',
 	);
 
 	$user_guid = elgg_get_logged_in_user_guid();
+	$immediate = get_input('immediate','');
 	
 	$required_fields = array('title','application');
 	
@@ -168,6 +168,14 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 		} else {
 			$conf->container_guid = $user_guid;
 		}
+		// handle the immediate case
+		// set start date and start time to now
+		if ($immediate) {
+			$conf->start_date = time();
+			$today = date('Y-m-d',$conf->start_date);
+			$midnight = strtotime($today);
+			$conf->start_time = ((int)(($conf->start_date - $midnight)/(60*5)))*5;
+		}
 	}
 	
 	$missing_fields = FALSE;
@@ -178,12 +186,19 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 			$missing_fields = TRUE;
 			break;
 		}
-		$conf->$fn = $value;
+		if ($fn == 'tags') {
+			$conf->$fn = string_to_tag_array($value);
+		} else {
+			if (!$immediate || $fn != 'start_date') {
+				$conf->$fn = $value;
+			}
+		}
 	}
 	
-	if (!$missing_fields) {
+	if (!$missing_fields && !$immediate) {
 		$sh = get_input('start_time_h','');
 		$sm = get_input('start_time_m','');
+		error_log("attempting to reset start time: sh, sm, start_date: $sh, $sm, {$conf->start_date}");
 		if (is_numeric($sh) && is_numeric($sm)) {
 			// workaround for pulldown zero value bug
 			$sh--;
@@ -197,18 +212,10 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 			// This allows sorting by date *and* time.
 			$conf->start_date += $conf->start_time*60;
 		}
-		if (($conf->immediate === '') && (!$conf->start_date || !$conf->start_time)) {
+		error_log("after calculations: sh, sm, start_date: $sh, $sm, {$conf->start_time}, {$conf->start_date}");
+		if (!$conf->start_date || !$conf->start_time) {
 			$missing_fields = TRUE;
 		}
-	}
-	
-	// handle the immediate case
-	// set start date and start time to now
-	if ($conf->immediate !== '') {
-		$conf->start_date = time();
-		$today = date('Y-m-d',$conf->start_date);
-		$midnight = strtotime($today);
-		$conf->start_time = ((int)(($conf->start_date - $midnight)/(60*5)))*5;
 	}
 	
 	if (!$missing_fields && $conf->save()) {
@@ -230,6 +237,8 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 }
 
 function sched_conf_sync_event_for_conference($conf,$event=NULL) {
+	error_log('attempting to sync this conference:');
+	error_log(print_r($conf,TRUE));
 	if (!$event) {
 		$event = new ElggObject();
 		$event->subtype = 'event_calendar';
