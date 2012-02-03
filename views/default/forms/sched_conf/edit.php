@@ -103,13 +103,25 @@ $access_input = elgg_view('input/access', array(
 	'value' => $fd['access_id']
 ));
 
+$event_calendar_personal_manage = elgg_get_plugin_setting('personal_manage', 'event_calendar');
+if ($event_calendar_personal_manage == 'by_event') {
+	$personal_manage_options = array(
+		elgg_echo('event_calendar:personal_manage:open') => 'open',
+		elgg_echo('event_calendar:personal_manage:closed') => 'closed',
+		elgg_echo('event_calendar:personal_manage:private') => 'private',
+	);
+	$personal_manage_label = elgg_echo('event_calendar:personal_manage:label');
+	$personal_manage_input = elgg_view("input/radio",array('name' => 'personal_manage','value'=>$fd['personal_manage'],'options'=>$personal_manage_options));
+	$personal_manage_description = '<p class="description">'.elgg_echo('event_calendar:personal_manage:description').'</p>';
+}
+
 // hidden inputs
 $group_guid_input = elgg_view('input/hidden', array('name' => 'group_guid', 'value' => $vars['group_guid']));
 $guid_input = elgg_view('input/hidden', array('name' => 'guid', 'value' => $fd['guid']));
 // hard coded to BBB for now
 $application_input = elgg_view('input/hidden', array('name' => 'application', 'value' => 'bbb'));
 
-echo <<<___HTML
+echo <<<__HTML
 <div>
 	<label for="sched-conf-title">$title_label</label>
 	$title_input
@@ -133,7 +145,19 @@ $description_input
 	<label for="sched-conf-start-date">$start_date_label</label>
 	$start_date_input
 </div>
+__HTML;
 
+if ($event_calendar_personal_manage == 'by_event') {
+echo <<<__HTML2
+<div>
+	<label for="sched-conf-personal-manage">$personal_manage_label</label>
+	$personal_manage_input
+	$personal_manage_description
+</div>
+__HTML2;
+}
+
+echo <<<__HTML3
 <div>
 	<label for="sched-conf-tags">$tags_label</label>
 	$tags_input
@@ -153,4 +177,4 @@ $description_input
 	$action_buttons
 </div>
 
-___HTML;
+__HTML3;

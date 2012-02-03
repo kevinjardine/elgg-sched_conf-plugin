@@ -76,6 +76,7 @@ function sched_conf_prepare_edit_form_vars($conf = NULL) {
 		'start_date' => NULL,
 		'start_time_h' => NULL,
 		'start_time_m' => NULL,
+		'personal_manage' => 'open',
 		'tags' => NULL,
 		'access_id' => ACCESS_DEFAULT,
 		'group_guid' => NULL,
@@ -144,6 +145,7 @@ function sched_conf_set_event_from_form($conf_guid=0,$group_guid=0) {
 		'application',
 		'immediate',
 		'start_date',
+		'personal_manage',
 		'tags',
 		'access_id',
 	);
@@ -252,6 +254,10 @@ function sched_conf_sync_event_for_conference($conf,$event=NULL) {
 	$event->start_date = $conf->start_date;
 	$event->end_date = '';
 	$event->start_time = $conf->start_time;
+	$event_calendar_personal_manage = elgg_get_plugin_setting('personal_manage', 'event_calendar');
+	if ($event_calendar_personal_manage == 'by_event') {
+		$event->personal_manage = $conf->personal_manage;
+	}
 	$event->tags = $conf->tags;
 	if (elgg_plugin_exists('event_calendar')) {
 		elgg_load_library('elgg:event_calendar');
