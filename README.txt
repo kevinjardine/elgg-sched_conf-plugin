@@ -1,3 +1,5 @@
+THIS PLUGIN IS DEPRECATED. ITS FEATURES ARE NOW BUILT INTO THE EVENT CALENDAR PLUGIN.
+
 This plugin adds web conferencing integration to the event calendar.
 
 This version supports Big Blue Button (BBB) version 0.8.
